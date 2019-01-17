@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ -f ~/.ibmcloud.rc ]; then
+    source ~/.ibmcloud.rc
+fi
+
+ibmcloud logout
+ibmcloud login --apikey "$IBMCLOUD_API_KEY" -a "$IBMCLOUD_API"
+
+if [ ! -z $IBMCLOUD_CS_REGION ]; then
+    ibmcloud cs region-set $IBMCLOUD_CS_REGION
+fi
+
+if [ ! -z $IBMCLOUD_RESOURCEGROUP ]; then
+    target_args=("-g" $IBMCLOUD_RESOURCEGROUP)
+fi
+
+if [ ! -z "$IBMCLOUD_ORGANIZATION" ]; then
+    if [ ! -z "$IBMCLOUD_SPACE" ]; then
+        target_args+=("-o" "$IBMCLOUD_ORGANIZATION" "-s" "$IBMCLOUD_SPACE")
+    else
+        target_args+=("-o" "$IBMCLOUD_ORGANIZATION")
+    fi
+fi
+
+ibmcloud target "${target_args[@]}"
